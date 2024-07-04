@@ -20,10 +20,10 @@ public class Panel extends JPanel implements MouseListener{
     private miniMap topView; 
     private Button btn_for_minimap;
 
-    private int pov = 50;
-    private int rayN = 6;
-    private int rayLenght = 500;
-    private int scale = 50;
+    private int pov = 60;
+    private int rayN = 60;
+    private int rayLenght = 10000;
+    private int scale = 70;
 
     public Panel(int width,int height, inputPosition pos){
         this.width = width;

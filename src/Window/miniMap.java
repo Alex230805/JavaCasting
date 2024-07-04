@@ -53,7 +53,6 @@ public class miniMap extends JComponent {
         this.map_height = map_height;
         this.map_lenght = map_lenght;
         this.scale = scale;
-        Graphics graph = this.getGraphics();
 
         for (int i = 0; i < map_height; i++) {
             for (int j = 0; j < map_lenght; j++) {
@@ -107,89 +106,111 @@ public class miniMap extends JComponent {
 
     public void paintComponent(Graphics graph) {
 
-        int rayInitialX = 0;
-        int rayInitialY = 0;
-        int directionX = 0;
-        int directionY = 0;
-        double angle = (pov / rayN) * Math.PI / 180;
-        double dAngle = 0;
-        Point def = new Point(100000000,100000000);
-
-        this.paintMap(graph);
-
-        Point rayStart;
-        Point rayEnd;
-        Point position = this.getPosition();
-        
-        graph.setColor(playerColor);
-        graph.fillRect(position.x, position.y, scale / 2, scale / 2);
-        rayInitialX = position.x + rayOrigin.x;
-        rayInitialY = position.y + rayOrigin.y;
-        directionX = (int)(rayInitialX+fl*Math.cos(pos.getRotation()));
-        directionY = (int)(rayInitialY+fl*Math.sin(pos.getRotation()));
-
-        graph.setColor(rayColor);
-
-        for(int i=0;i<rayN;i++){
-            dAngle = (angle*i)-((pov/2)*(Math.PI/180));
-            directionX = (int)(rayInitialX+fl*Math.cos(dAngle+pos.getRotation()));
-            directionY = (int)(rayInitialY+fl*Math.sin(dAngle+pos.getRotation()));
+            int rayInitialX = 0;
+            int rayInitialY = 0;
+            int directionX = 0;
+            int directionY = 0;
+            double angle = (pov / rayN) * Math.PI / 180;
+            double dAngle = 0;
+            double half_inclination = (pov/2)*(Math.PI/180);
+    
+            this.paintMap(graph);
+    
+            Point rayStart;
+            Point rayEnd;
+            Point position = this.getPosition();
+            
+            graph.setColor(playerColor);
+            graph.fillRect(position.x, position.y, scale / 2, scale / 2);
+            rayInitialX = position.x + rayOrigin.x;
+            rayInitialY = position.y + rayOrigin.y;
+    
+            directionX = (int)(rayInitialX+fl*Math.cos(pos.getRotation()));
+            directionY = (int)(rayInitialY+fl*Math.sin(pos.getRotation()));
+                    
             rayStart = new Point(rayInitialX,rayInitialY);
-            rayEnd = new Point(directionX,directionY);
+    
+            graph.setColor(rayColor);
+    
+            for(int i=0;i<rayN;i++){
+                dAngle = (angle*i)-half_inclination;
+                directionX = (int)(rayInitialX+fl*Math.cos(dAngle+pos.getRotation()));
+                directionY = (int)(rayInitialY+fl*Math.sin(dAngle+pos.getRotation()));
+                rayEnd = new Point(directionX,directionY);
+                try{
+                    rayIntersection(graph,rayStart,rayEnd);
+                }catch(Exception ex){
+                    graph.drawLine(rayInitialX,rayInitialY, directionX,directionY);
+                }
 
-            for(int j=0;j<section.size();j++){
-                Point a = rayEngine.rayCast(section.get(j).a,section.get(j).b, rayStart, rayEnd);
-                Point b = rayEngine.rayCast(section.get(j).b,section.get(j).c, rayStart, rayEnd);
-                Point c = rayEngine.rayCast(section.get(j).c,section.get(j).d, rayStart, rayEnd);
-                Point d = rayEngine.rayCast(section.get(j).d,section.get(j).a, rayStart, rayEnd);
+            }
 
-                if(a != null){
-                    graph.fillOval(a.x, a.y, scale/10, scale/10);
-                    //graph.drawLine(rayInitialX,rayInitialY,a.x,a.y);
-                    castedPoint.add(a);                   
-                }else{
-                    graph.drawLine(rayInitialX,rayInitialY,directionX,directionY);
-                }
-                if(b != null){
-                    graph.fillOval(b.x, b.y, scale/10, scale/10);
-                    //graph.drawLine(rayInitialX,rayInitialY,b.x,b.y);
-                    castedPoint.add(b);
-                }else{
-                    graph.drawLine(rayInitialX,rayInitialY,directionX,directionY);
-                }
-                if(c != null){
-                    graph.fillOval(c.x, c.y, scale/10, scale/10);
-                    //graph.drawLine(rayInitialX,rayInitialY,c.x,c.y);
-                    castedPoint.add(c);
-                }else{
-                    graph.drawLine(rayInitialX,rayInitialY,directionX,directionY);
-                }
-                if(d != null){
-                    graph.fillOval(d.x, d.y, scale/10, scale/10);
-                    //graph.drawLine(rayInitialX,rayInitialY,d.x,d.y);
-                    castedPoint.add(d);
-                }else{
-                    graph.drawLine(rayInitialX,rayInitialY,directionX,directionY);
-                }
-                /* 
-                def.x = def.x - rayInitialX;
-                def.y = def.y - rayInitialY;
 
-                for(int x=0;x<castedPoint.size();x++){
-                    int cx = castedPoint.get(x).x-rayInitialX;
-                    int cy = castedPoint.get(x).y-rayInitialY;
-                    if(cx < def.x && cy < def.y){
-                        def.x = cx;
-                        def.y = cy;
-                    }
-                }
-                graph.drawLine(rayInitialX,rayInitialY,def.x,def.y);
-                */
-                castedPoint.clear();
+    }
+
+    public void rayIntersection(Graphics graph,Point rayStart, Point rayEnd) throws Exception{
+        int lenght = 0;
+        int cache = 0;
+        int stage = 0;
+
+        for(int i=0;i<section.size();i++){
+            Point a = rayEngine.rayCast(section.get(i).a,section.get(i).b, rayStart, rayEnd);
+            Point b = rayEngine.rayCast(section.get(i).b,section.get(i).c, rayStart, rayEnd);
+            Point c = rayEngine.rayCast(section.get(i).c,section.get(i).d, rayStart, rayEnd);
+            Point d = rayEngine.rayCast(section.get(i).d,section.get(i).a, rayStart, rayEnd);
+
+            if(a != null){
+                //graph.fillOval(a.x, a.y, scale/10, scale/10);
+                //graph.drawLine(rayStart.x,rayStart.y,a.x,a.y);
+                castedPoint.add(a);                   
+            }else{
+                //graph.drawLine(rayStart.x,rayStart.y,rayEnd.x,rayEnd.y);
+            }
+            if(b != null){
+                //graph.fillOval(b.x, b.y, scale/10, scale/10);
+                //graph.drawLine(rayStart.x,rayStart.y,b.x,b.y);
+                castedPoint.add(b);
+            }else{
+                //graph.drawLine(rayStart.x,rayStart.y,rayEnd.x,rayEnd.y);
+            }
+            if(c != null){
+                //graph.fillOval(c.x, c.y, scale/10, scale/10);
+                //graph.drawLine(rayStart.x,rayStart.y,c.x,c.y);
+                castedPoint.add(c);
+            }else{
+                //graph.drawLine(rayStart.x,rayStart.y,rayEnd.x,rayEnd.y);
+            }
+            if(d != null){
+                //graph.fillOval(d.x, d.y, scale/10, scale/10);
+                //graph.drawLine(rayStart.x,rayStart.y,d.x,d.y);
+                castedPoint.add(d);
+            }else{
+                //graph.drawLine(rayStart.x,rayStart.y,rayEnd.x,rayEnd.y);
             }
         }
+        int cx = rayEnd.x - rayStart.x;
+        int cy = rayEnd.y - rayStart.y;
+        cx *= cx;
+        cy *= cy;
+        lenght= (int)(Math.sqrt(cx+cy));
+        try{
+            for(int i=0;i<castedPoint.size();i++){
+                cx = castedPoint.get(i).x - rayStart.x;
+                cy =  castedPoint.get(i).y - rayStart.y;
+                cx *= cx;
+                cy *= cy;
+                cache = (int)(Math.sqrt(cx+cy));
+                if(cache < lenght){
+                    lenght = cache;
+                    stage = i;
+                }
+            }
+            graph.drawLine(rayStart.x,rayStart.y,castedPoint.get(stage).x,castedPoint.get(stage).y);
+            castedPoint.clear();
+        }catch(Exception ex){
+            throw ex;
+        }
 
-        
     }
 
     private Point getPosition(){
