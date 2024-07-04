@@ -20,9 +20,9 @@ public class Panel extends JPanel implements MouseListener{
     private miniMap topView; 
     private Button btn_for_minimap;
 
-    private int pov = 60;
-    private int rayN = 40;
-    private int rayLenght = 10000;
+    private int pov = 50;
+    private int rayN = 6;
+    private int rayLenght = 500;
     private int scale = 50;
 
     public Panel(int width,int height, inputPosition pos){
@@ -56,17 +56,18 @@ public class Panel extends JPanel implements MouseListener{
             {1,0,0,0,0,0,0,0,1,0,0,0,0,1,0,1},
             {1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1},
         };
-        topView = new miniMap(Map,16 ,12 ,1, 1, pos, pov, rayN);
-        topView.setRayOrigin(12);
+        topView = new miniMap(Map,16 ,12 ,1, 1, pos, pov, rayN, scale);
+        topView.setRayOrigin(scale/4);
         topView.setRayLenght(rayLenght);
         topView.setPlayerColor(new Color(0,255,0));
         topView.setRayColor(new Color(255,0,0));
         topView.setBlockColor(new Color(255,255,255));
-        topView.setScale(scale);
         this.setEnabled(true);
         this.setVisible(true);
         this.add(btn_for_minimap);
         this.add(topView);
+
+
     }
     @Override
     public void paintComponent(Graphics graph){

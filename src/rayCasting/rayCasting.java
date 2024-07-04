@@ -23,10 +23,6 @@ public class rayCasting {
         int rayFinalX = p4.x;
         int rayFinalY = p4.y;
 
-        double denominatorP1 = (cubeInitialX - cubeFinalX) * (rayInitialX - cubeFinalX);
-        double denominatorP2 = (cubeInitialY - cubeFinalY) * (rayInitialX - rayFinalX);
-        double denominator = denominatorP1 - denominatorP2;
-
         double TnominatorP1 = (cubeInitialX - rayInitialX) * (rayInitialY - rayFinalY);
         double TnominatorP2 = (cubeInitialY-rayInitialY)*(rayInitialX-rayFinalX);
         double Tnominator = TnominatorP1 - TnominatorP2;
@@ -35,8 +31,8 @@ public class rayCasting {
         double UnominatorP2 = (cubeInitialY-rayInitialY)*(cubeInitialX-rayInitialX);
         double Unominator = UnominatorP1 - UnominatorP2;
 
-        double t = Tnominator/denominator;
-        double u = Unominator/denominator;
+        double t = Tnominator;
+        double u = Unominator;
 
         if(t < 1.0 && t > 0.0 && u > 0.0){
             return true;
@@ -44,6 +40,7 @@ public class rayCasting {
             return false;
         }
     }
+    
     public Point rayCast(Point p1,Point p2,Point p3,Point p4){
         int cubeInitialX = p1.x;
         int cubeInitialY = p1.y;

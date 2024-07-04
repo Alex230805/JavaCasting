@@ -37,7 +37,12 @@ public class miniMap extends JComponent {
 
     private rayCasting rayEngine;
 
-    public miniMap(int[][] Map,int map_lenght,int map_height, int playerX, int playerY, inputPosition pos, int pov, int rayN) {
+
+    private ArrayList<Cube> section = new ArrayList<>();
+    private ArrayList<Point> castedPoint = new ArrayList<>();
+
+
+    public miniMap(int[][] Map,int map_lenght,int map_height, int playerX, int playerY, inputPosition pos, int pov, int rayN, int scale) {
         this.rayEngine = new rayCasting();
         this.Map = Map;
         this.playerX = playerX;
@@ -47,6 +52,22 @@ public class miniMap extends JComponent {
         this.rayN = rayN;
         this.map_height = map_height;
         this.map_lenght = map_lenght;
+        this.scale = scale;
+        Graphics graph = this.getGraphics();
+
+        for (int i = 0; i < map_height; i++) {
+            for (int j = 0; j < map_lenght; j++) {
+                if (Map[i][j] != 0) {
+                    Point a = new Point(j * scale,i * scale);
+                    Point b = new Point((j * scale)+scale,i * scale);
+                    Point c = new Point((j * scale)+scale,(i * scale)+scale);
+                    Point d = new Point(j * scale,(i * scale)+scale);
+                    Cube cb = new Cube(a,b,c,d);
+                    section.add(cb);
+                }
+            }
+        }
+
     }
 
     public void setRayOrigin(int origin) {
@@ -55,10 +76,6 @@ public class miniMap extends JComponent {
 
     public void setRayLenght(int rayLenght) {
         this.fl = rayLenght;
-    }
-
-    public void setScale(int scale) {
-        this.scale = scale;
     }
 
     public void setBlockColor(Color color) {
@@ -73,32 +90,12 @@ public class miniMap extends JComponent {
         this.playerColor = color;
     }
 
-    public void paintComponent(Graphics graph) {
-        int rayInitialX = 0;
-        int rayInitialY = 0;
-        int directionX = 0;
-        int directionY = 0;
-        double angle = (pov / rayN) * Math.PI / 180;
-        double bias = 0.1;
-        double dAngle = 0;
+    public void paintMap(Graphics graph){
         int block_lenght = scale;
-        Point def = null;
-
-        ArrayList<Cube> section = new ArrayList<>();
-        ArrayList<Point> castedPoint = new ArrayList<>();
-
-        Point rayStart;
-        Point rayEnd;
 
         for (int i = 0; i < map_height; i++) {
             for (int j = 0; j < map_lenght; j++) {
                 if (Map[i][j] > 0) {
-                    Point a = new Point(j * scale,i * scale);
-                    Point b = new Point((j * scale)+scale,i * scale);
-                    Point c = new Point((j * scale)+scale,(i * scale)+scale);
-                    Point d = new Point(j * scale,(i * scale)+scale);
-                    Cube cb = new Cube(a,b,c,d);
-                    section.add(cb);
                     graph.setColor(blockColor);
                 } else {
                     graph.setColor(new Color(0, 0, 0));
@@ -106,8 +103,24 @@ public class miniMap extends JComponent {
                 graph.fillRect(j * scale, i * scale, block_lenght, block_lenght);
             }
         }
+    }
 
+    public void paintComponent(Graphics graph) {
+
+        int rayInitialX = 0;
+        int rayInitialY = 0;
+        int directionX = 0;
+        int directionY = 0;
+        double angle = (pov / rayN) * Math.PI / 180;
+        double dAngle = 0;
+        Point def = new Point(100000000,100000000);
+
+        this.paintMap(graph);
+
+        Point rayStart;
+        Point rayEnd;
         Point position = this.getPosition();
+        
         graph.setColor(playerColor);
         graph.fillRect(position.x, position.y, scale / 2, scale / 2);
         rayInitialX = position.x + rayOrigin.x;
@@ -132,32 +145,47 @@ public class miniMap extends JComponent {
 
                 if(a != null){
                     graph.fillOval(a.x, a.y, scale/10, scale/10);
-                    graph.drawLine(rayInitialX,rayInitialY,a.x,a.y);
+                    //graph.drawLine(rayInitialX,rayInitialY,a.x,a.y);
                     castedPoint.add(a);                   
                 }else{
                     graph.drawLine(rayInitialX,rayInitialY,directionX,directionY);
                 }
                 if(b != null){
                     graph.fillOval(b.x, b.y, scale/10, scale/10);
-                    graph.drawLine(rayInitialX,rayInitialY,b.x,b.y);
+                    //graph.drawLine(rayInitialX,rayInitialY,b.x,b.y);
                     castedPoint.add(b);
                 }else{
                     graph.drawLine(rayInitialX,rayInitialY,directionX,directionY);
                 }
                 if(c != null){
                     graph.fillOval(c.x, c.y, scale/10, scale/10);
-                    graph.drawLine(rayInitialX,rayInitialY,c.x,c.y);
+                    //graph.drawLine(rayInitialX,rayInitialY,c.x,c.y);
                     castedPoint.add(c);
                 }else{
                     graph.drawLine(rayInitialX,rayInitialY,directionX,directionY);
                 }
                 if(d != null){
                     graph.fillOval(d.x, d.y, scale/10, scale/10);
-                    graph.drawLine(rayInitialX,rayInitialY,d.x,d.y);
+                    //graph.drawLine(rayInitialX,rayInitialY,d.x,d.y);
                     castedPoint.add(d);
                 }else{
                     graph.drawLine(rayInitialX,rayInitialY,directionX,directionY);
                 }
+                /* 
+                def.x = def.x - rayInitialX;
+                def.y = def.y - rayInitialY;
+
+                for(int x=0;x<castedPoint.size();x++){
+                    int cx = castedPoint.get(x).x-rayInitialX;
+                    int cy = castedPoint.get(x).y-rayInitialY;
+                    if(cx < def.x && cy < def.y){
+                        def.x = cx;
+                        def.y = cy;
+                    }
+                }
+                graph.drawLine(rayInitialX,rayInitialY,def.x,def.y);
+                */
+                castedPoint.clear();
             }
         }
 
