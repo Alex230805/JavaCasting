@@ -52,7 +52,6 @@ public class Window implements KeyListener, Input {
                 pos.restoreFactor();
             }
 
-
             if (Input.inputBuffer.contains(KeyEvent.VK_W)) {
                 pos.moveFw();
             }
@@ -73,6 +72,7 @@ public class Window implements KeyListener, Input {
                 pos.rotateClockwise();
             }
         }, 0, 16, TimeUnit.MILLISECONDS);
+
     }
 
     public int getHeight() {
@@ -100,6 +100,11 @@ public class Window implements KeyListener, Input {
     }
 
     public void keyTyped(KeyEvent e) {
-        //System.out.println(e.getKeyChar());
+        Input.inputBuffer.add(e.getKeyCode());
+        if(Input.inputBuffer.contains(KeyEvent.VK_M)){
+            pos.changeMiniMapView();
+
+        }
+        Input.inputBuffer.remove(e.getKeyCode());
     }
 }

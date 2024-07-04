@@ -2,6 +2,7 @@ package Window;
 
 
 import Button.Button;
+import Window.Input;
 import java.awt.event.*;
 import java.io.*;
 import java.awt.*;
@@ -10,7 +11,7 @@ import javax.swing.*;
 import Entity.entity;
 import rayCasting.rayCasting;
 
-public class Panel extends JPanel implements MouseListener{
+public class Panel extends JPanel implements MouseListener, Input{
     private int width;
     private int height;
     private inputPosition pos = null;
@@ -20,70 +21,95 @@ public class Panel extends JPanel implements MouseListener{
     private miniMap topView; 
     private Button btn_for_minimap;
 
-    private int pov = 60;
-    private int rayN = 60;
-    private int rayLenght = 10000;
-    private int scale = 70;
+    private int pov = 50;
+    private int rayN = 30;
+    private int rayLenght = 1000;
+    private int scale = 50;
 
     public Panel(int width,int height, inputPosition pos){
-        this.width = width;
-        this.height = height;   
-        setSize(width,height);
-        this.pos = pos;
-        playerX = 1;
-        playerY = 1;
-        rayCasting rayEngine = new rayCasting();
-        btn_for_minimap = new Button(900, 10,"Toggle Minimap");
+        try{
+            this.width = width;
+            this.height = height;   
+            setSize(width,height);
+            this.pos = pos;
+            playerX = 1;
+            playerY = 1;
+            rayCasting rayEngine = new rayCasting();
+            //btn_for_minimap = new Button(900, 10,"Toggle Minimap");
+    
+            /*
+             *  TODO: try to find a way to make the toggle button work properly
+             * 
+             *  for now the main listener is attached to the main Panel
+             */
+            //btn_for_minimap.addMouseListener(this);
+    
+            Map = new int[][]{
+                {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                {1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1},
+                {1,1,1,1,0,1,0,0,0,0,1,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0},
+                {1,0,0,0,0,0,1,0,0,0,1,1,1,1,1,0},
+                {1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1},
+                {1,0,1,0,0,0,1,0,0,0,0,1,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1},
+                {1,1,0,0,0,0,0,1,0,0,0,0,1,0,0,1},
+                {1,0,0,0,0,0,0,0,1,0,0,0,0,1,0,1},
+                {1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1},
+            };
+            if(rayN > pov){
+                throw new Exception("Build error: too many rays");
+            }
+            if(pov > 360 || rayN > 360){
+                throw new Exception("Build error: max cast lenght reached");
+            }
+            if(rayLenght > 1000000){
+                throw new Exception("Build error: def. cast lenght is too high");
+            }
 
-        /*
-         *  TODO: try to find a way to make the toggle button work properly
-         * 
-         *  for now the main listener is attached to the main Panel
-         */
-        this.addMouseListener(this);
+            topView = new miniMap(Map,16 ,12 ,1, 1, pos, pov, rayN, scale);
+            topView.setRayOrigin(scale/4);
+            topView.setRayLenght(rayLenght);
+            topView.setPlayerColor(new Color(0,255,0));
+            topView.setRayColor(new Color(255,0,0));
+            topView.setBlockColor(new Color(255,255,255));
+            this.setEnabled(true);
+            this.setVisible(true);
+            this.add(topView);
+            //this.add(btn_for_minimap);
+        }catch(Exception ex){
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
 
-        Map = new int[][]{
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1},
-            {1,1,1,1,0,1,0,0,0,0,1,0,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0},
-            {1,0,0,0,0,0,1,0,0,0,1,1,1,1,1,0},
-            {1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1},
-            {1,0,1,0,0,0,1,0,0,0,0,1,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1},
-            {1,1,0,0,0,0,0,1,0,0,0,0,1,0,0,1},
-            {1,0,0,0,0,0,0,0,1,0,0,0,0,1,0,1},
-            {1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1},
-        };
-        topView = new miniMap(Map,16 ,12 ,1, 1, pos, pov, rayN, scale);
-        topView.setRayOrigin(scale/4);
-        topView.setRayLenght(rayLenght);
-        topView.setPlayerColor(new Color(0,255,0));
-        topView.setRayColor(new Color(255,0,0));
-        topView.setBlockColor(new Color(255,255,255));
-        this.setEnabled(true);
-        this.setVisible(true);
-        this.add(btn_for_minimap);
-        this.add(topView);
 
 
     }
     @Override
     public void paintComponent(Graphics graph){
+        /* 
         btn_for_minimap.paint(graph);
 
         if(btn_for_minimap.state){
             topView.paint(graph);
         }
+            */
+
+        if(pos.getMiniMapView()){
+            topView.paint(graph);
+        }
+
     }
     @Override
     public void mouseClicked(MouseEvent e) {
+        /* 
         if (!btn_for_minimap.state) {
             btn_for_minimap.state = true;
         } else {
             btn_for_minimap.state = false;
         }
+            */
     }
     @Override
     public void mousePressed(MouseEvent e) {
@@ -93,10 +119,14 @@ public class Panel extends JPanel implements MouseListener{
     }
     @Override
     public void mouseEntered(MouseEvent e) {
+        /* 
         btn_for_minimap.selected = btn_for_minimap.bgColorHover;
-    }
+        */
+        }
     @Override
     public void mouseExited(MouseEvent e) {
+        /* 
         btn_for_minimap.selected = btn_for_minimap.bgColor;
+        */
     }
 }
