@@ -27,7 +27,7 @@ public class MapCast extends JComponent implements displayEngine{
     private int rayN = 2;
 
     private Point rayOrigin = null;
-    private Point rayEnd = null;
+    private int mapSize = 30;
 
     private Color blockColor = null;
     private Color rayColor = null;
@@ -39,13 +39,14 @@ public class MapCast extends JComponent implements displayEngine{
     private int displayHeight = 0;
 
     private rayCasting rayEngine;
+    private int fov;
 
 
     private ArrayList<Cube> section = new ArrayList<>();
     private ArrayList<Point> castedPoint = new ArrayList<>();
 
 
-    public MapCast(int[][] Map,int map_lenght,int map_height, int playerX, int playerY, inputPosition pos, int pov, int rayN, int scale,int displayWidth, int displayHeight) {
+    public MapCast(int[][] Map,int map_lenght,int map_height, int playerX, int playerY, inputPosition pos, int pov, int rayN, int scale,int displayWidth, int displayHeight, int fov) {
         this.rayEngine = new rayCasting();
         this.Map = Map;
         this.playerX = playerX;
@@ -58,6 +59,9 @@ public class MapCast extends JComponent implements displayEngine{
         this.scale = scale;
         this.displayWidth = displayWidth;
         this.displayHeight = displayHeight;
+        this.fov = fov;
+
+    
 
         for (int i = 0; i < map_height; i++) {
             for (int j = 0; j < map_lenght; j++) {
@@ -95,7 +99,7 @@ public class MapCast extends JComponent implements displayEngine{
     }
 
     public void paintMap(Graphics graph){
-        int block_lenght = scale;
+
 
         for (int i = 0; i < map_height; i++) {
             for (int j = 0; j < map_lenght; j++) {
@@ -104,7 +108,7 @@ public class MapCast extends JComponent implements displayEngine{
                 } else {
                     graph.setColor(new Color(0, 0, 0));
                 }
-                graph.fillRect(j * scale, i * scale, block_lenght, block_lenght);
+                graph.fillRect(j * mapSize, i * mapSize, mapSize, mapSize);
             }
         }
     }
@@ -120,26 +124,18 @@ public class MapCast extends JComponent implements displayEngine{
             double angle = (pov / rayN) * Math.PI / 180;
             double dAngle = 0;
             double half_inclination = (pov/2)*(Math.PI/180);
-    
-            if(minimap_enabled){
-                this.paintMap(graph);
-            }
-    
+
             Point rayStart;
             Point rayEnd;
             Point position = this.getPosition();
-            
-            if(minimap_enabled){
-                graph.setColor(playerColor);
-                graph.fillRect(position.x, position.y, scale / 2, scale / 2);
-            }
+            Point miniPos = this.getMiniPosition();
 
             rayInitialX = position.x + rayOrigin.x;
             rayInitialY = position.y + rayOrigin.y;
     
             directionX = (int)(rayInitialX+fl*Math.cos(pos.getRotation()));
             directionY = (int)(rayInitialY+fl*Math.sin(pos.getRotation()));
-                    
+
             rayStart = new Point(rayInitialX,rayInitialY);
     
             graph.setColor(rayColor);
@@ -152,14 +148,15 @@ public class MapCast extends JComponent implements displayEngine{
                 try{
                     rayIntersection(graph,rayStart,rayEnd,minimap_enabled,fp_enable, i);
                 }catch(Exception ex){
-                    if(minimap_enabled){
-                        graph.setColor(rayColor);
-                        graph.drawLine(rayStart.x,rayStart.y,directionX,directionY);
-                    }
+
                 }
             }
-
-
+                
+            if(minimap_enabled){
+                this.paintMap(graph);
+                graph.setColor(playerColor);
+                graph.fillRect(miniPos.x, miniPos.y,5, 5);
+            }
     }
 
     public void rayIntersection(Graphics graph,Point rayStart, Point rayEnd, boolean minimap_enabled, boolean fp, int current_ray) throws Exception{
@@ -174,32 +171,16 @@ public class MapCast extends JComponent implements displayEngine{
             Point d = rayEngine.rayCast(section.get(i).d,section.get(i).a, rayStart, rayEnd);
 
             if(a != null){
-                //graph.fillOval(a.x, a.y, scale/10, scale/10);
-                //graph.drawLine(rayStart.x,rayStart.y,a.x,a.y);
                 castedPoint.add(a);
-            }else{
-                //graph.drawLine(rayStart.x,rayStart.y,rayEnd.x,rayEnd.y);
             }
             if(b != null){
-                //graph.fillOval(b.x, b.y, scale/10, scale/10);
-                //graph.drawLine(rayStart.x,rayStart.y,b.x,b.y);
                 castedPoint.add(b);
-            }else{
-                //graph.drawLine(rayStart.x,rayStart.y,rayEnd.x,rayEnd.y);
             }
             if(c != null){
-                //graph.fillOval(c.x, c.y, scale/10, scale/10);
-                //graph.drawLine(rayStart.x,rayStart.y,c.x,c.y);
                 castedPoint.add(c);
-            }else{
-                //graph.drawLine(rayStart.x,rayStart.y,rayEnd.x,rayEnd.y);
             }
             if(d != null){
-                //graph.fillOval(d.x, d.y, scale/10, scale/10);
-                //graph.drawLine(rayStart.x,rayStart.y,d.x,d.y);
                 castedPoint.add(d);
-            }else{
-                //graph.drawLine(rayStart.x,rayStart.y,rayEnd.x,rayEnd.y);
             }
         }
         int cx = rayEnd.x - rayStart.x;
@@ -219,12 +200,8 @@ public class MapCast extends JComponent implements displayEngine{
                     stage = i;
                 }
             }
-            if(minimap_enabled){
-                graph.setColor(rayColor);
-                graph.drawLine(rayStart.x,rayStart.y,castedPoint.get(stage).x,castedPoint.get(stage).y);
-            }
             if(fp){
-                displayEngine.displayLine(displayWidth,displayHeight,lenght, rayN, graph, current_ray);
+                displayEngine.displayLine(displayWidth,displayHeight,lenght, rayN, graph, current_ray, fov);
             }
             castedPoint.clear();
         }catch(Exception ex){
@@ -243,7 +220,7 @@ public class MapCast extends JComponent implements displayEngine{
         int playerSize = scale/2;
         int positionX = (playerX * scale) + offX;
         int positionY = (playerY * scale) + offY;
-
+        
         if (positionX >= width-playerSize) {
             pos.setX(width-scale-playerSize);
         } else if (positionX <= scale) {
@@ -254,6 +231,18 @@ public class MapCast extends JComponent implements displayEngine{
         } else if (positionY < scale) {
             pos.setY(0);
         }
+        
+        return new Point(positionX,positionY);
+    }
+    private Point getMiniPosition(){
+        int offX = pos.getX()/(scale/mapSize);
+        int offY = pos.getY()/(scale/mapSize);
+        int width = map_lenght*mapSize;
+        int height = map_height*mapSize;
+        width -= (mapSize);
+        height -= (mapSize);
+        int positionX = (playerX * mapSize) + offX;
+        int positionY = (playerY * mapSize) + offY;
         return new Point(positionX,positionY);
     }
 }

@@ -23,6 +23,7 @@ public class Window implements KeyListener, Input {
         this.height = height;
         frame = new JFrame("Text");
         pos = new inputPosition(4);
+        frame.setResizable(false);
         frame.setResizable(true);
         frame.setTitle("Test");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

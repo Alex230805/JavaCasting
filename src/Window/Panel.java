@@ -23,8 +23,9 @@ public class Panel extends JPanel implements MouseListener, Input{
 
     private int pov = 50;
     private int rayN = 50;
-    private int rayLenght = 1000;
-    private int scale = 50;
+    private int rayLenght = 10000;
+    private int scale = 100;
+    private int fov = 3;
 
     public Panel(int width,int height, inputPosition pos){
         try{
@@ -34,16 +35,6 @@ public class Panel extends JPanel implements MouseListener, Input{
             this.pos = pos;
             playerX = 1;
             playerY = 1;
-            rayCasting rayEngine = new rayCasting();
-            //btn_for_minimap = new Button(900, 10,"Toggle Minimap");
-    
-            /*
-             *  TODO: try to find a way to make the toggle button work properly
-             * 
-             *  for now the main listener is attached to the main Panel
-             */
-            //btn_for_minimap.addMouseListener(this);
-    
             Map = new int[][]{
                 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                 {1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1},
@@ -64,11 +55,11 @@ public class Panel extends JPanel implements MouseListener, Input{
             if(pov > 360 || rayN > 360){
                 throw new Exception("Build error: max cast lenght reached");
             }
-            if(rayLenght > 1000000){
+            if(rayLenght > 100000000){
                 throw new Exception("Build error: def. cast lenght is too high");
             }
 
-            topView = new MapCast(Map,16 ,12 ,1, 1, pos, pov, rayN, scale, width, height);
+            topView = new MapCast(Map,16 ,12 ,1, 1, pos, pov, rayN, scale, width, height, fov);
             topView.setRayOrigin(scale/4);
             topView.setRayLenght(rayLenght);
             topView.setPlayerColor(new Color(0,255,0));
@@ -77,7 +68,6 @@ public class Panel extends JPanel implements MouseListener, Input{
             this.setEnabled(true);
             this.setVisible(true);
             this.add(topView);
-            //this.add(btn_for_minimap);
         }catch(Exception ex){
             System.out.println(ex.getMessage());
             System.exit(1);

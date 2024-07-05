@@ -8,14 +8,13 @@ import javax.swing.*;
 
 public interface displayEngine{
 
-    public static void displayLine(int width, int height,int distance, int rayN, Graphics graph, int currentRay){
+    public static void displayLine(int width, int height,int distance, int rayN, Graphics graph, int currentRay, int fov){
         int rayWidth = (int)(width/rayN);
         int rayX = rayWidth*currentRay-1;
-        int rayHeight = (int)(height-distance);
+        int rayHeight = (int)(height-distance/fov);
         int rayY = (height - rayHeight)/2;
-        int light = 50;
-        graph.setColor(new Color(255-light-distance/2,255-light-distance/2,255-light-distance/2));
+        int light = 40;
+        graph.setColor(new Color(255-light-distance/4,255-light-distance/4,255-light-distance/4));
         graph.fillRect(rayX,rayY, rayWidth,rayHeight);
-        graph.drawRect(rayX-1,rayY-1, rayWidth+1, rayHeight+1);
     }
 }

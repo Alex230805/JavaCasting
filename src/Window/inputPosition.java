@@ -42,10 +42,10 @@ public class inputPosition {
         this.y = y;
     }
     public void rotateClockwise(){
-        this.rotation += 0.1;
+        this.rotation += 0.04;
     }
     public void rotateAntiClockwise(){
-        this.rotation -= 0.1;
+        this.rotation -= 0.04;
     }
     public double getRotation(){
         return rotation;
