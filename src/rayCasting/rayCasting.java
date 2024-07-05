@@ -76,7 +76,7 @@ public class rayCasting {
             castPoint = new Point(newX,newY);
             return castPoint;
         }else{
-           return null;
+            return null;
         }
     }
 }

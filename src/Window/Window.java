@@ -103,7 +103,9 @@ public class Window implements KeyListener, Input {
         Input.inputBuffer.add(e.getKeyCode());
         if(Input.inputBuffer.contains(KeyEvent.VK_M)){
             pos.changeMiniMapView();
-
+        }
+        if(Input.inputBuffer.contains(KeyEvent.VK_P)){
+            pos.changeFPView();
         }
         Input.inputBuffer.remove(e.getKeyCode());
     }

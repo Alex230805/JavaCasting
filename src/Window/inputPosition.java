@@ -7,6 +7,7 @@ public class inputPosition {
     private int cache = 0;
     private double rotation = 0;
     private boolean miniMapState = false;
+    private boolean fp = true;
     
     public inputPosition(int factor){
         this.factor = factor;
@@ -66,6 +67,18 @@ public class inputPosition {
 
     public boolean getMiniMapView(){
         return miniMapState;
+    }
+
+    public void changeFPView(){
+        if(fp){
+            fp = false;
+        }else{
+            fp = true;
+        }
+    }
+
+    public boolean getFPView(){
+        return fp;
     }
 }
 

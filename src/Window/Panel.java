@@ -18,11 +18,11 @@ public class Panel extends JPanel implements MouseListener, Input{
     private int[][] Map;
     private int playerX;
     private int playerY;
-    private miniMap topView; 
+    private MapCast topView; 
     private Button btn_for_minimap;
 
     private int pov = 50;
-    private int rayN = 30;
+    private int rayN = 50;
     private int rayLenght = 1000;
     private int scale = 50;
 
@@ -68,7 +68,7 @@ public class Panel extends JPanel implements MouseListener, Input{
                 throw new Exception("Build error: def. cast lenght is too high");
             }
 
-            topView = new miniMap(Map,16 ,12 ,1, 1, pos, pov, rayN, scale);
+            topView = new MapCast(Map,16 ,12 ,1, 1, pos, pov, rayN, scale, width, height);
             topView.setRayOrigin(scale/4);
             topView.setRayLenght(rayLenght);
             topView.setPlayerColor(new Color(0,255,0));
@@ -88,28 +88,11 @@ public class Panel extends JPanel implements MouseListener, Input{
     }
     @Override
     public void paintComponent(Graphics graph){
-        /* 
-        btn_for_minimap.paint(graph);
-
-        if(btn_for_minimap.state){
-            topView.paint(graph);
-        }
-            */
-
-        if(pos.getMiniMapView()){
-            topView.paint(graph);
-        }
+        topView.paint(graph);
 
     }
     @Override
     public void mouseClicked(MouseEvent e) {
-        /* 
-        if (!btn_for_minimap.state) {
-            btn_for_minimap.state = true;
-        } else {
-            btn_for_minimap.state = false;
-        }
-            */
     }
     @Override
     public void mousePressed(MouseEvent e) {
@@ -119,14 +102,8 @@ public class Panel extends JPanel implements MouseListener, Input{
     }
     @Override
     public void mouseEntered(MouseEvent e) {
-        /* 
-        btn_for_minimap.selected = btn_for_minimap.bgColorHover;
-        */
         }
     @Override
     public void mouseExited(MouseEvent e) {
-        /* 
-        btn_for_minimap.selected = btn_for_minimap.bgColor;
-        */
     }
 }

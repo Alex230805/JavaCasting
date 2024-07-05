@@ -1,6 +1,7 @@
 package Window;
 
 
+import Window.displayEngine;
 import Entity.Cube;
 import java.awt.event.*;
 import java.io.*;
@@ -14,7 +15,7 @@ import javax.swing.*;
 import Entity.entity;
 import rayCasting.rayCasting;
 
-public class miniMap extends JComponent {
+public class MapCast extends JComponent implements displayEngine{
     private int[][] Map;
     private int playerX = 0;
     private int playerY = 0;
@@ -34,6 +35,8 @@ public class miniMap extends JComponent {
 
     private int map_lenght = 0;
     private int map_height = 0;
+    private int displayWidth = 0;
+    private int displayHeight = 0;
 
     private rayCasting rayEngine;
 
@@ -42,7 +45,7 @@ public class miniMap extends JComponent {
     private ArrayList<Point> castedPoint = new ArrayList<>();
 
 
-    public miniMap(int[][] Map,int map_lenght,int map_height, int playerX, int playerY, inputPosition pos, int pov, int rayN, int scale) {
+    public MapCast(int[][] Map,int map_lenght,int map_height, int playerX, int playerY, inputPosition pos, int pov, int rayN, int scale,int displayWidth, int displayHeight) {
         this.rayEngine = new rayCasting();
         this.Map = Map;
         this.playerX = playerX;
@@ -53,6 +56,8 @@ public class miniMap extends JComponent {
         this.map_height = map_height;
         this.map_lenght = map_lenght;
         this.scale = scale;
+        this.displayWidth = displayWidth;
+        this.displayHeight = displayHeight;
 
         for (int i = 0; i < map_height; i++) {
             for (int j = 0; j < map_lenght; j++) {
@@ -105,6 +110,8 @@ public class miniMap extends JComponent {
     }
 
     public void paintComponent(Graphics graph) {
+            boolean minimap_enabled = pos.getMiniMapView();
+            boolean fp_enable = pos.getFPView();
 
             int rayInitialX = 0;
             int rayInitialY = 0;
@@ -114,14 +121,19 @@ public class miniMap extends JComponent {
             double dAngle = 0;
             double half_inclination = (pov/2)*(Math.PI/180);
     
-            this.paintMap(graph);
+            if(minimap_enabled){
+                this.paintMap(graph);
+            }
     
             Point rayStart;
             Point rayEnd;
             Point position = this.getPosition();
             
-            graph.setColor(playerColor);
-            graph.fillRect(position.x, position.y, scale / 2, scale / 2);
+            if(minimap_enabled){
+                graph.setColor(playerColor);
+                graph.fillRect(position.x, position.y, scale / 2, scale / 2);
+            }
+
             rayInitialX = position.x + rayOrigin.x;
             rayInitialY = position.y + rayOrigin.y;
     
@@ -138,17 +150,19 @@ public class miniMap extends JComponent {
                 directionY = (int)(rayInitialY+fl*Math.sin(dAngle+pos.getRotation()));
                 rayEnd = new Point(directionX,directionY);
                 try{
-                    rayIntersection(graph,rayStart,rayEnd);
+                    rayIntersection(graph,rayStart,rayEnd,minimap_enabled,fp_enable, i);
                 }catch(Exception ex){
-                    graph.drawLine(rayInitialX,rayInitialY, directionX,directionY);
+                    if(minimap_enabled){
+                        graph.setColor(rayColor);
+                        graph.drawLine(rayStart.x,rayStart.y,directionX,directionY);
+                    }
                 }
-
             }
 
 
     }
 
-    public void rayIntersection(Graphics graph,Point rayStart, Point rayEnd) throws Exception{
+    public void rayIntersection(Graphics graph,Point rayStart, Point rayEnd, boolean minimap_enabled, boolean fp, int current_ray) throws Exception{
         int lenght = 0;
         int cache = 0;
         int stage = 0;
@@ -162,7 +176,7 @@ public class miniMap extends JComponent {
             if(a != null){
                 //graph.fillOval(a.x, a.y, scale/10, scale/10);
                 //graph.drawLine(rayStart.x,rayStart.y,a.x,a.y);
-                castedPoint.add(a);                   
+                castedPoint.add(a);
             }else{
                 //graph.drawLine(rayStart.x,rayStart.y,rayEnd.x,rayEnd.y);
             }
@@ -205,7 +219,13 @@ public class miniMap extends JComponent {
                     stage = i;
                 }
             }
-            graph.drawLine(rayStart.x,rayStart.y,castedPoint.get(stage).x,castedPoint.get(stage).y);
+            if(minimap_enabled){
+                graph.setColor(rayColor);
+                graph.drawLine(rayStart.x,rayStart.y,castedPoint.get(stage).x,castedPoint.get(stage).y);
+            }
+            if(fp){
+                displayEngine.displayLine(displayWidth,displayHeight,lenght, rayN, graph, current_ray);
+            }
             castedPoint.clear();
         }catch(Exception ex){
             throw ex;
