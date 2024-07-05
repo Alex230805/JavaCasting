@@ -1,6 +1,8 @@
 package Window;
 
 
+
+import Entity.CastPoint;
 import Window.displayEngine;
 import Entity.Cube;
 import java.awt.event.*;
@@ -40,10 +42,11 @@ public class MapCast extends JComponent implements displayEngine{
 
     private rayCasting rayEngine;
     private int fov;
-
+    private boolean oldEngine = false;
 
     private ArrayList<Cube> section = new ArrayList<>();
     private ArrayList<Point> castedPoint = new ArrayList<>();
+    private ArrayList<CastPoint> povTotalPoint = new ArrayList<>();
 
 
     public MapCast(int[][] Map,int map_lenght,int map_height, int playerX, int playerY, inputPosition pos, int pov, int rayN, int scale,int displayWidth, int displayHeight, int fov) {
@@ -148,8 +151,11 @@ public class MapCast extends JComponent implements displayEngine{
                 try{
                     rayIntersection(graph,rayStart,rayEnd,minimap_enabled,fp_enable, i);
                 }catch(Exception ex){
-
                 }
+            }
+            if(fp_enable && !oldEngine){
+                displayEngine.displayLineV2(graph,povTotalPoint, displayWidth,displayHeight, rayN, fov);
+                povTotalPoint.clear();
             }
                 
             if(minimap_enabled){
@@ -200,8 +206,10 @@ public class MapCast extends JComponent implements displayEngine{
                     stage = i;
                 }
             }
-            if(fp){
+            if(fp && oldEngine){
                 displayEngine.displayLine(displayWidth,displayHeight,lenght, rayN, graph, current_ray, fov);
+            }else{
+                povTotalPoint.add(new CastPoint(castedPoint.get(stage), lenght, current_ray));
             }
             castedPoint.clear();
         }catch(Exception ex){

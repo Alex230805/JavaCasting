@@ -21,10 +21,10 @@ public class Panel extends JPanel implements MouseListener, Input{
     private MapCast topView; 
     private Button btn_for_minimap;
 
-    private int pov = 50;
-    private int rayN = 50;
-    private int rayLenght = 10000;
-    private int scale = 100;
+    private int pov = 40;
+    private int rayN = 40;
+    private int rayLenght = 100000;
+    private int scale = 200;
     private int fov = 3;
 
     public Panel(int width,int height, inputPosition pos){
@@ -70,7 +70,6 @@ public class Panel extends JPanel implements MouseListener, Input{
             this.add(topView);
         }catch(Exception ex){
             System.out.println(ex.getMessage());
-            System.exit(1);
         }
 
 
