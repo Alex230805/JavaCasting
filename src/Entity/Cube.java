@@ -1,14 +1,9 @@
 package Entity;
 
-import java.util.Vector;
 
-import java.awt.event.*;
-import java.io.*;
 import java.awt.*;
-import java.util.*;
-import javax.swing.*;
-import Entity.entity;
 
+/* cube class to store the main vertex of a wall in the map */
 
 public class Cube {
     public Point a;

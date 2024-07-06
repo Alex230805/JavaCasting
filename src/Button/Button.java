@@ -1,18 +1,13 @@
 package Button;
 
-import java.awt.event.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.PathIterator;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.io.*;
 import java.awt.*;
-import java.util.*;
 import javax.swing.*;
 
-import org.w3c.dom.events.MouseEvent;
-
-import java.util.*;
+/*
+ * 
+ * this button object is not used int the project. Add it may cause some issue. 
+ * 
+ */
 
 public class Button extends JComponent{
     private String title = null;

@@ -1,11 +1,13 @@
 package Entity;
 
-import java.awt.event.*;
-import java.io.*;
 import java.awt.*;
-import java.util.*;
 import javax.swing.*;
-import javax.swing.JComponent;
+
+/*
+ * 
+ * this entity object is not used int the project. Add it may cause some issue. 
+ * 
+ */
 
 public class entity extends JPanel{
     private int width = 0;

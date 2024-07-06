@@ -1,13 +1,7 @@
 package rayCasting;
 
-import java.util.Vector;
-
-import java.awt.event.*;
-import java.io.*;
 import java.awt.*;
-import java.util.*;
-import javax.swing.*;
-import Entity.entity;
+
 
 
 public class rayCasting {

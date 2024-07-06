@@ -2,14 +2,10 @@ package Window;
 
 
 import Button.Button;
-import Window.Input;
 import java.awt.event.*;
-import java.io.*;
 import java.awt.*;
-import java.util.*;
 import javax.swing.*;
-import Entity.entity;
-import rayCasting.rayCasting;
+
 
 public class Panel extends JPanel implements MouseListener, Input{
     private int width;
@@ -25,7 +21,7 @@ public class Panel extends JPanel implements MouseListener, Input{
     private int rayN = 40;
     private int rayLenght = 100000;
     private int scale = 200;
-    private int fov = 3;
+    private int fov = 2;
 
     public Panel(int width,int height, inputPosition pos){
         try{
