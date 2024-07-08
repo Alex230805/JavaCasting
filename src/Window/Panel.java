@@ -17,11 +17,11 @@ public class Panel extends JPanel implements MouseListener, Input{
     private MapCast topView; 
     private Button btn_for_minimap;
 
-    private int pov = 40;
-    private int rayN = 40;
+    private int pov = 50;
+    private int rayN = 50;
     private int rayLenght = 100000;
-    private int scale = 200;
-    private int fov = 2;
+    private int scale = 1000;
+    private int fov = 20;
 
     public Panel(int width,int height, inputPosition pos){
         try{

@@ -50,7 +50,7 @@ public class MapCast extends JComponent implements displayEngine{
      * 
      */
 
-    private int engineSelection = 1;
+    private int engineSelection = 2;
     /*
      *
      *  NOTE: resolutrion will only work with the engineV3.
@@ -59,7 +59,7 @@ public class MapCast extends JComponent implements displayEngine{
      *  In other case the resolutrion is simply ingored.
      * 
      */
-    private int resolution = 20;
+    private int resolution = 4;
 
     /*
      * 

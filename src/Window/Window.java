@@ -22,7 +22,7 @@ public class Window implements KeyListener, Input {
         this.width = width;
         this.height = height;
         frame = new JFrame("Text");
-        pos = new inputPosition(4);
+        pos = new inputPosition(20);
         frame.setResizable(false);
         frame.setResizable(true);
         frame.setTitle("Test");
@@ -42,13 +42,13 @@ public class Window implements KeyListener, Input {
         ScheduledExecutorService scheduledInput = Executors.newScheduledThreadPool(1);
         scheduledInput.scheduleAtFixedRate(()->{
             if (Input.inputBuffer.contains(KeyEvent.VK_W) && Input.inputBuffer.contains(KeyEvent.VK_D)){
-                pos.changeFactor(3);
+                pos.changeFactor((int)(pos.getFactor()*0.8));
             }else if (Input.inputBuffer.contains(KeyEvent.VK_W) && Input.inputBuffer.contains(KeyEvent.VK_A)){
-                pos.changeFactor(3);
+                pos.changeFactor((int)(pos.getFactor()*0.8));
             }else if (Input.inputBuffer.contains(KeyEvent.VK_S) && Input.inputBuffer.contains(KeyEvent.VK_D)){
-                pos.changeFactor(3);
+                pos.changeFactor((int)(pos.getFactor()*0.8));
             }else if (Input.inputBuffer.contains(KeyEvent.VK_S) && Input.inputBuffer.contains(KeyEvent.VK_A)){
-                pos.changeFactor(3);
+                pos.changeFactor((int)(pos.getFactor()*0.8));
             }else{
                 pos.restoreFactor();
             }
@@ -107,6 +107,9 @@ public class Window implements KeyListener, Input {
         }
         if(Input.inputBuffer.contains(KeyEvent.VK_P)){
             pos.changeFPView();
+        }
+        if(Input.inputBuffer.contains(KeyEvent.VK_T)){
+            pos.changeLight();
         }
         Input.inputBuffer.remove(e.getKeyCode());
     }

@@ -8,6 +8,7 @@ public class inputPosition {
     private double rotation = 0;
     private boolean miniMapState = false;
     private boolean fp = true;
+    private boolean light = false;
     
     public inputPosition(int factor){
         this.factor = factor;
@@ -56,7 +57,9 @@ public class inputPosition {
     public void restoreFactor(){
         this.factor = cache;
     }
-
+    public int getFactor(){
+        return factor;
+    }
     public void changeMiniMapView(){
         if(miniMapState){
             miniMapState = false;
@@ -76,7 +79,16 @@ public class inputPosition {
             fp = true;
         }
     }
-
+    public void changeLight(){
+        if(light){
+            light = false;
+        }else{
+            light = true;
+        }
+    }
+    public boolean getLight(){
+        return light;
+    }
     public boolean getFPView(){
         return fp;
     }
