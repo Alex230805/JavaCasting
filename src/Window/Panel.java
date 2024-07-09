@@ -19,9 +19,9 @@ public class Panel extends JPanel implements MouseListener, Input{
 
     private int pov = 50;
     private int rayN = 50;
-    private int rayLenght = 100000;
-    private int scale = 1000;
-    private int fov = 20;
+    private int rayLenght = 10000;
+    private int scale = 80;
+    private int fov = 2;
 
     public Panel(int width,int height, inputPosition pos){
         try{
@@ -46,13 +46,13 @@ public class Panel extends JPanel implements MouseListener, Input{
                 {1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1},
             };
             if(rayN > pov){
-                throw new Exception("Build error: too many rays");
+                throw new Exception("Cast error: too many rays");
             }
             if(pov > 360 || rayN > 360){
-                throw new Exception("Build error: max cast lenght reached");
+                throw new Exception("FOV error: max cast lenght reached");
             }
             if(rayLenght > 100000000){
-                throw new Exception("Build error: def. cast lenght is too high");
+                throw new Exception("Cast Error error: def. cast lenght is too high");
             }
 
             topView = new MapCast(Map,16 ,12 ,1, 1, pos, pov, rayN, scale, width, height, fov);

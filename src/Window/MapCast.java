@@ -59,7 +59,7 @@ public class MapCast extends JComponent implements displayEngine{
      *  In other case the resolutrion is simply ingored.
      * 
      */
-    private int resolution = 4;
+    private int resolution = 2;
 
     /*
      * 
@@ -191,7 +191,7 @@ public class MapCast extends JComponent implements displayEngine{
     
             graph.setColor(rayColor);   /* set the ray color */
     
-            try{
+
                 for(int i=0;i<rayN;i++){
                     /*
                      * 
@@ -214,8 +214,9 @@ public class MapCast extends JComponent implements displayEngine{
                     rayIntersection(graph,rayStart,rayEnd,minimap_enabled,fp_enable, i);
     
                 }
+            try{
                 if(fp_enable){ /* if the first person view is enabled then the display engine will be called */
-                    displayEngine.enginePrint(graph,povTotalPoint, displayWidth,displayHeight, rayN, fov, engineSelection, resolution);
+                    displayEngine.enginePrint(graph,povTotalPoint, displayWidth,displayHeight, rayN, fov, engineSelection, resolution, pos);
                     povTotalPoint.clear();
                 }
     

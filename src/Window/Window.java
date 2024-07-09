@@ -22,7 +22,7 @@ public class Window implements KeyListener, Input {
         this.width = width;
         this.height = height;
         frame = new JFrame("Text");
-        pos = new inputPosition(20);
+        pos = new inputPosition(4);
         frame.setResizable(false);
         frame.setResizable(true);
         frame.setTitle("Test");
@@ -42,13 +42,13 @@ public class Window implements KeyListener, Input {
         ScheduledExecutorService scheduledInput = Executors.newScheduledThreadPool(1);
         scheduledInput.scheduleAtFixedRate(()->{
             if (Input.inputBuffer.contains(KeyEvent.VK_W) && Input.inputBuffer.contains(KeyEvent.VK_D)){
-                pos.changeFactor((int)(pos.getFactor()*0.8));
+                pos.changeFactor(3);
             }else if (Input.inputBuffer.contains(KeyEvent.VK_W) && Input.inputBuffer.contains(KeyEvent.VK_A)){
-                pos.changeFactor((int)(pos.getFactor()*0.8));
+                pos.changeFactor(3);
             }else if (Input.inputBuffer.contains(KeyEvent.VK_S) && Input.inputBuffer.contains(KeyEvent.VK_D)){
-                pos.changeFactor((int)(pos.getFactor()*0.8));
+                pos.changeFactor(3);
             }else if (Input.inputBuffer.contains(KeyEvent.VK_S) && Input.inputBuffer.contains(KeyEvent.VK_A)){
-                pos.changeFactor((int)(pos.getFactor()*0.8));
+                pos.changeFactor(3);
             }else{
                 pos.restoreFactor();
             }

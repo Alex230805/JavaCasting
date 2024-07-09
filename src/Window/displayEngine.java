@@ -6,9 +6,11 @@ import java.util.*;
 
 
 public interface displayEngine {
-    public static int light = 10;
+    public static int light = 30;
     public static ArrayList<CastPoint> cachePoint = new ArrayList<>();
-    public static final boolean protection_mode = true;
+    public static final boolean protection_mode = false;
+    public static int player_light = 120;
+    public static int light_bias = 2;
 
     /*
      * 
@@ -20,13 +22,14 @@ public interface displayEngine {
      * 
      */
 
-    public static void displayLine(Graphics graph, ArrayList<CastPoint> povPoint, int width, int height, int rayNumber,
-            int fov) throws Exception {
+    private static void displayLine(Graphics graph, ArrayList<CastPoint> povPoint, int width, int height, int rayNumber,
+            int fov,boolean Plight) throws Exception {
         int rayWidth = 0;
         int rayX = 0;
         int rayHeight = 0;
         int rayY = 0;
         int distance = 0;
+        int[] rgb;
         try {
             for (int i = 0; i < povPoint.size(); i++) {
                 distance = povPoint.get(i).distance;
@@ -34,8 +37,8 @@ public interface displayEngine {
                 rayX = rayWidth * povPoint.get(i).currentRayN;
                 rayHeight = (int) (height - distance / fov);
                 rayY = (height - rayHeight) / 2;
-                graph.setColor(
-                        new Color(255 - light - distance / 6, 255 - light - distance / 2, 255 - light - distance / 2));
+                rgb = shadowCasting(light_bias, distance,Plight);
+                graph.setColor(new Color(rgb[0], rgb[1], rgb[2]));
                 graph.fillRect(rayX, rayY, rayWidth, rayHeight);
             }
         } catch (Exception ex) {
@@ -43,8 +46,8 @@ public interface displayEngine {
         }
     }
 
-    public static void displayLineV2(Graphics graph, ArrayList<CastPoint> povPoint, int width, int height,
-            int rayNumber, int fov) throws Exception {
+    private static void displayLineV2(Graphics graph, ArrayList<CastPoint> povPoint, int width, int height,
+            int rayNumber, int fov, boolean Plight) throws Exception {
         CastPoint cp = null;
         CastPoint switchPoint = null;
         int rayWidth = (int) (width / rayNumber)+2;
@@ -60,13 +63,13 @@ public interface displayEngine {
             if (!povPoint.isEmpty()) {
                 switchPoint = povPoint.get(0);
                 SWrayHeight = (int) (height - switchPoint.distance / fov);
-                SWrayY = (height - rayHeight) / 2;
-                SWrayX = rayWidth * switchPoint.currentRayN;
+                SWrayY = (int)((height - rayHeight) * 0.5);
+                SWrayX = rayWidth * switchPoint.currentRayN - rayWidth;
                 for (int i = 1; i < povPoint.size(); i++) {
                     cp = povPoint.get(i);
                     rayX = rayWidth * cp.currentRayN-rayWidth;
                     rayHeight = (int) (height - cp.distance / fov);
-                    rayY = (height - rayHeight) / 2;
+                    rayY = (int)((height - rayHeight) * 0.5);
                     /*
                      * graph.setColor(new Color(0,0,0));
                      * graph.drawLine(rayX,rayY,rayX, rayY+rayHeight);
@@ -81,22 +84,9 @@ public interface displayEngine {
                         int[] xPoints = { SWrayX, SWrayX, rayX, rayX };
                         int[] yPoints = { SWrayY, SWrayY + SWrayHeight, rayY + rayHeight, rayY };
                         int n_point = 4;
+                        int[] rgb = shadowCasting(light_bias, cp.distance, Plight);
+                        fillVertex(xPoints, yPoints, n_point, graph, rgb);
 
-                        int r = 255 - light - cp.distance / 4;
-                        int g = 255 - light - cp.distance / 4;
-                        int b = 255 - light - cp.distance / 4;
-
-                        if (r < 0) {
-                            r = 0;
-                        }
-                        if (g < 0) {
-                            g = 0;
-                        }
-                        if (b < 0) {
-                            b = 0;
-                        }
-                        graph.setColor(new Color(r, g, b));
-                        graph.fillPolygon(xPoints, yPoints, n_point);
                     }
                     SWrayHeight = rayHeight;
                     SWrayX = rayX;
@@ -108,8 +98,8 @@ public interface displayEngine {
         }
     }
 
-    public static void displayLineV3(Graphics graph, ArrayList<CastPoint> povPoint, int width, int height,
-            int rayNumber, int fov, int resolution) throws Exception {
+    private static void displayLineV3(Graphics graph, ArrayList<CastPoint> povPoint, int width, int height,
+            int rayNumber, int fov, int resolution, boolean Plight) throws Exception {
    
             try{
                 if(protection_mode){
@@ -118,12 +108,17 @@ public interface displayEngine {
             }catch(Exception ex){
                 throw ex;
             }
+
+            /*
+             * 
+             *  TODO: implement a similar rendering engine like the V2, but adding the scaling to improve resolution.
+             * 
+             */
             
             CastPoint cp = null;
             CastPoint switchPoint = null;
             int totalPoint = rayNumber*resolution;
-            int cursor = 0;
-            int rayWidth = (int) (width / rayNumber)+2;
+            int rayWidth = (int) (width / rayNumber)+resolution;
             int hrayWidth = (int)(rayWidth/resolution);
             int cache = hrayWidth;
 
@@ -153,14 +148,10 @@ public interface displayEngine {
                     if(SWdistance > currentDistance){ /* if the previous  distance is greater than the current distance */
                         SWdistance *= +1;
                     }
-                    if(SWdistance == currentDistance){ /* if both distance are equal */
-                        SWdistance = 0;
-                    }
                     rayX = rayWidth * cp.currentRayN - rayWidth;
 
                     for(int j=0;j<resolution;j++){
-                        cachePoint.add(new CastPoint(new Point(rayX+hrayWidth, 0), currentDistance + SWdistance,cursor));
-                        cursor++;
+                        cachePoint.add(new CastPoint(new Point(rayX+hrayWidth, 0), currentDistance + SWdistance,(cp.currentRayN*resolution)+j));
                         currentDistance += SWdistance;
                         hrayWidth+=cache;
                     }
@@ -169,63 +160,73 @@ public interface displayEngine {
             }
         try {
             if(!cachePoint.isEmpty()){
-
                 hrayWidth = cache;
-
                 switchPoint = cachePoint.get(0);
                 SWrayHeight = (int) (height - switchPoint.distance / fov);
-                SWrayY = (height - rayHeight) / 2;
-                SWrayX = hrayWidth * switchPoint.currentRayN;
-                for (int i = 1; i < totalPoint; i++) {
+                SWrayY = (int)((height - rayHeight) * 0.5);
+                SWrayX = hrayWidth * switchPoint.currentRayN - hrayWidth;
+                for (int i = 1; i < cachePoint.size(); i++) {
                     cp = cachePoint.get(i);
                     rayX = hrayWidth * cp.currentRayN - hrayWidth;
                     rayHeight = (int) (height - cp.distance / fov);
-                    rayY = (height - rayHeight) / 2;
+                    rayY = (int)((height - rayHeight) * 0.5);
 
                     if (SWrayX + hrayWidth == rayX) {
                         int[] xPoints = { SWrayX, SWrayX, rayX, rayX };
                         int[] yPoints = { SWrayY, SWrayY + SWrayHeight, rayY + rayHeight, rayY };
                         int n_point = 4;
-    
-                        int r = 255 - light - cp.distance/255;
-                        int g = 255 - light - cp.distance/255;
-                        int b = 255 - light - cp.distance/255;
-    
-                        if (r < 0) {r=0;} else if (r>255){r=255;}
-                        if (g < 0) {g=0;} else if (g>255){g=255;}
-                        if (b < 0) {b=0;} else if (b>255){b=255;}
-
-                        graph.setColor(new Color(r, g, b));
-                        graph.fillPolygon(xPoints, yPoints, n_point);
+                        int[] rgb = shadowCasting(light_bias, cp.distance, Plight);
+                        fillVertex(xPoints, yPoints, n_point, graph, rgb);
                     }
                     SWrayHeight = rayHeight;
                     SWrayX = rayX;
                     SWrayY = rayY;
                 }    
             }
-            /*
-             * 
-             *  TODO: implement a similar rendering engine like the V2, but adding the scaling to improve resolution.
-             * 
-             */
             cachePoint.clear();
         } catch (Exception ex) {
             throw ex;
         }
     }
 
+    
+    private static int[] shadowCasting(int factor ,int distance, boolean Plight){
+        int ambient_light = light;
+        int[] rgb;
+
+        if(Plight){
+            ambient_light = light+player_light;
+        }
+        int r = 255 + ambient_light - distance/factor;
+        int g = 255 + ambient_light - distance/factor;
+        int b = 255 + ambient_light - distance/factor;
+
+        if (r < 0) {r=0;} else if (r>255){r=255;}
+        if (g < 0) {g=0;} else if (g>255){g=255;}
+        if (b < 0) {b=0;} else if (b>255){b=255;}
+
+        rgb = new int[]{r,g,b};
+        return rgb;
+    }
+    
+    private static void fillVertex(int[] xPoints, int[] yPoints, int n_point, Graphics graph, int[] rgb){
+        graph.setColor(new Color(rgb[0], rgb[1], rgb[2]));
+        graph.fillPolygon(xPoints, yPoints, n_point);
+        return;
+    }
+
     public static void enginePrint(Graphics graph, ArrayList<CastPoint> povPoint, int width, int height, int rayNumber,
-            int fov, int engineSelection, int resolution) throws Exception {
+            int fov, int engineSelection, int resolution, inputPosition pos) throws Exception {
         try {
             switch (engineSelection) {
                 case 0:
-                    displayLine(graph, povPoint, width, height, rayNumber, fov);
+                    displayLine(graph, povPoint, width, height, rayNumber, fov, pos.getLight());
                     break;
                 case 1:
-                    displayLineV2(graph, povPoint, width, height, rayNumber, fov);
+                    displayLineV2(graph, povPoint, width, height, rayNumber, fov, pos.getLight());
                     break;
                 case 2:
-                    displayLineV3(graph, povPoint, width, height, rayNumber, fov, resolution);
+                    displayLineV3(graph, povPoint, width, height, rayNumber, fov, resolution, pos.getLight());
                     break;
             }
         } catch (Exception ex) {
@@ -233,4 +234,5 @@ public interface displayEngine {
             throw ex;
         }
     }
+
 }
