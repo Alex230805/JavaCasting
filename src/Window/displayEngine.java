@@ -6,11 +6,11 @@ import java.util.*;
 
 
 public interface displayEngine {
-    public static int light = 30;
+    public static int light = 80;
     public static ArrayList<CastPoint> cachePoint = new ArrayList<>();
     public static final boolean protection_mode = false;
     public static int player_light = 120;
-    public static int light_bias = 2;
+    public static int light_bias = 1;
 
     /*
      * 
@@ -22,7 +22,7 @@ public interface displayEngine {
      * 
      */
 
-    private static void displayLine(Graphics graph, ArrayList<CastPoint> povPoint, int width, int height, int rayNumber,
+     public static void displayLine(Graphics graph, ArrayList<CastPoint> povPoint, int width, int height, int rayNumber,
             int fov,boolean Plight) throws Exception {
         int rayWidth = 0;
         int rayX = 0;
@@ -46,7 +46,7 @@ public interface displayEngine {
         }
     }
 
-    private static void displayLineV2(Graphics graph, ArrayList<CastPoint> povPoint, int width, int height,
+    public static void displayLineV2(Graphics graph, ArrayList<CastPoint> povPoint, int width, int height,
             int rayNumber, int fov, boolean Plight) throws Exception {
         CastPoint cp = null;
         CastPoint switchPoint = null;
@@ -54,19 +54,25 @@ public interface displayEngine {
         int rayHeight = 0;
         int rayY = 0;
         int rayX = 0;
+        int rayN = 0;
+
         int SWrayHeight = -1;
         int SWrayY = -1;
         int SWrayX = -1;
+        int SWnumber = 0;
 
         try {
 
             if (!povPoint.isEmpty()) {
+                
                 switchPoint = povPoint.get(0);
+                SWnumber = switchPoint.currentRayN;
                 SWrayHeight = (int) (height - switchPoint.distance / fov);
                 SWrayY = (int)((height - rayHeight) * 0.5);
                 SWrayX = rayWidth * switchPoint.currentRayN - rayWidth;
                 for (int i = 1; i < povPoint.size(); i++) {
                     cp = povPoint.get(i);
+                    rayN = cp.currentRayN;
                     rayX = rayWidth * cp.currentRayN-rayWidth;
                     rayHeight = (int) (height - cp.distance / fov);
                     rayY = (int)((height - rayHeight) * 0.5);
@@ -80,7 +86,7 @@ public interface displayEngine {
                      * }
                      * graph.setColor(new Color(255,255,255));
                      */
-                    if (SWrayX + rayWidth == rayX) {
+                    if (SWnumber+1 == rayN) {
                         int[] xPoints = { SWrayX, SWrayX, rayX, rayX };
                         int[] yPoints = { SWrayY, SWrayY + SWrayHeight, rayY + rayHeight, rayY };
                         int n_point = 4;
@@ -91,6 +97,7 @@ public interface displayEngine {
                     SWrayHeight = rayHeight;
                     SWrayX = rayX;
                     SWrayY = rayY;
+                    SWnumber = rayN;
                 }
             }
         } catch (Exception ex) {
@@ -98,7 +105,7 @@ public interface displayEngine {
         }
     }
 
-    private static void displayLineV3(Graphics graph, ArrayList<CastPoint> povPoint, int width, int height,
+    public static void displayLineV3(Graphics graph, ArrayList<CastPoint> povPoint, int width, int height,
             int rayNumber, int fov, int resolution, boolean Plight) throws Exception {
    
             try{
@@ -120,18 +127,23 @@ public interface displayEngine {
             int totalPoint = rayNumber*resolution;
             int rayWidth = (int) (width / rayNumber)+resolution;
             int hrayWidth = (int)(rayWidth/resolution);
-            int cache = hrayWidth;
 
             int rayHeight = 0;
             int rayY = 0;
             int rayX = 0;
+            int distance = 0;
+            
             
 
             int SWrayHeight = -1;
             int SWrayY = -1;
             int SWrayX = -1;
-            
             int SWdistance = 0;
+
+            int[] xPoints;
+            int[] yPoints;
+            int n_point = 0;
+            
             int currentDistance = 0;
 
             if(!povPoint.isEmpty()){
@@ -151,46 +163,57 @@ public interface displayEngine {
                     rayX = rayWidth * cp.currentRayN - rayWidth;
 
                     for(int j=0;j<resolution;j++){
-                        cachePoint.add(new CastPoint(new Point(rayX+hrayWidth, 0), currentDistance + SWdistance,(cp.currentRayN*resolution)+j));
-                        currentDistance += SWdistance;
-                        hrayWidth+=cache;
+                        cachePoint.add(new CastPoint(new Point(rayX+(hrayWidth*j), 0), currentDistance + (SWdistance*j),(cp.currentRayN*resolution)+j));
                     }
                     SWdistance = cp.distance;
                 }
             }
-        try {
             if(!cachePoint.isEmpty()){
-                hrayWidth = cache;
                 switchPoint = cachePoint.get(0);
                 SWrayHeight = (int) (height - switchPoint.distance / fov);
                 SWrayY = (int)((height - rayHeight) * 0.5);
-                SWrayX = hrayWidth * switchPoint.currentRayN - hrayWidth;
+                SWrayX = hrayWidth*switchPoint.currentRayN - rayWidth-hrayWidth;
+                SWdistance = switchPoint.distance;
                 for (int i = 1; i < cachePoint.size(); i++) {
                     cp = cachePoint.get(i);
-                    rayX = hrayWidth * cp.currentRayN - hrayWidth;
+                    rayX = hrayWidth*cp.currentRayN - rayWidth-hrayWidth;
                     rayHeight = (int) (height - cp.distance / fov);
                     rayY = (int)((height - rayHeight) * 0.5);
+                    distance = cp.distance;
 
-                    if (SWrayX + hrayWidth == rayX) {
-                        int[] xPoints = { SWrayX, SWrayX, rayX, rayX };
-                        int[] yPoints = { SWrayY, SWrayY + SWrayHeight, rayY + rayHeight, rayY };
-                        int n_point = 4;
+    
+                    int clc = SWdistance-distance;
+                    if(clc < 0){ clc *= -1; }
+
+                    if(clc > SWdistance*resolution){ /* change condition */
+                        //System.out.println("nothing before");
+                        xPoints = new int[]{ rayX, rayX };
+                        yPoints = new int[]{ rayY + rayHeight, rayY };
+                        n_point = 2;
                         int[] rgb = shadowCasting(light_bias, cp.distance, Plight);
                         fillVertex(xPoints, yPoints, n_point, graph, rgb);
-                    }
+
+                     }else{
+                        //System.out.println(" ");
+                        if (SWrayX+hrayWidth == rayX) {
+                            xPoints = new int[]{ SWrayX, SWrayX, rayX, rayX };
+                            yPoints = new int[]{ SWrayY, SWrayY + SWrayHeight, rayY + rayHeight, rayY };
+                            n_point = 4;
+                            int[] rgb = shadowCasting(light_bias, cp.distance, Plight);
+                            fillVertex(xPoints, yPoints, n_point, graph, rgb);
+                        }
+                     }
                     SWrayHeight = rayHeight;
                     SWrayX = rayX;
                     SWrayY = rayY;
+                    SWdistance = distance;
                 }    
             }
             cachePoint.clear();
-        } catch (Exception ex) {
-            throw ex;
-        }
     }
 
     
-    private static int[] shadowCasting(int factor ,int distance, boolean Plight){
+    public static int[] shadowCasting(int factor ,int distance, boolean Plight){
         int ambient_light = light;
         int[] rgb;
 
@@ -209,7 +232,7 @@ public interface displayEngine {
         return rgb;
     }
     
-    private static void fillVertex(int[] xPoints, int[] yPoints, int n_point, Graphics graph, int[] rgb){
+    public static void fillVertex(int[] xPoints, int[] yPoints, int n_point, Graphics graph, int[] rgb){
         graph.setColor(new Color(rgb[0], rgb[1], rgb[2]));
         graph.fillPolygon(xPoints, yPoints, n_point);
         return;

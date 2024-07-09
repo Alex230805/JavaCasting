@@ -20,7 +20,7 @@ public class Panel extends JPanel implements MouseListener, Input{
     private int pov = 50;
     private int rayN = 50;
     private int rayLenght = 10000;
-    private int scale = 80;
+    private int scale = 100;
     private int fov = 2;
 
     public Panel(int width,int height, inputPosition pos){
