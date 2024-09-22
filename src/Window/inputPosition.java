@@ -9,7 +9,8 @@ public class inputPosition {
     private boolean miniMapState = false;
     private boolean fp = true;
     private boolean light = false;
-    
+    private int engine = 0;  
+
     public inputPosition(int factor){
         this.factor = factor;
         this.cache = factor;
@@ -66,6 +67,13 @@ public class inputPosition {
         }else{
             miniMapState = true;
         }
+    }
+    public void switchEngine(int engine){
+      this.engine = engine;
+    }  
+
+    public int getEngine(){
+        return this.engine;
     }
 
     public boolean getMiniMapView(){

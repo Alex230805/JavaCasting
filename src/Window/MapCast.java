@@ -50,7 +50,7 @@ public class MapCast extends JComponent implements displayEngine{
      * 
      */
 
-    private int engineSelection = 2;
+//    private int engineSelection = 2;
     /*
      *
      *  NOTE: resolutrion will only work with the engineV3.
@@ -216,7 +216,7 @@ public class MapCast extends JComponent implements displayEngine{
                 }
             try{
                 if(fp_enable){ /* if the first person view is enabled then the display engine will be called */
-                    displayEngine.enginePrint(graph,povTotalPoint, displayWidth,displayHeight, rayN, fov, engineSelection, resolution, pos);
+                    displayEngine.enginePrint(graph,povTotalPoint, displayWidth,displayHeight, rayN, fov, pos.getEngine(), resolution, pos);
                     povTotalPoint.clear();
                 }
     

@@ -185,16 +185,8 @@ public interface displayEngine {
                     int clc = SWdistance-distance;
                     if(clc < 0){ clc *= -1; }
 
-                    if(clc > SWdistance*resolution){ /* change condition */
-                        //System.out.println("nothing before");
-                        xPoints = new int[]{ rayX, rayX };
-                        yPoints = new int[]{ rayY + rayHeight, rayY };
-                        n_point = 2;
-                        int[] rgb = shadowCasting(light_bias, cp.distance, Plight);
-                        fillVertex(xPoints, yPoints, n_point, graph, rgb);
-
-                     }else{
-                        //System.out.println(" ");
+                    if(clc < distance){
+                        System.out.println("Cast wall");
                         if (SWrayX+hrayWidth == rayX) {
                             xPoints = new int[]{ SWrayX, SWrayX, rayX, rayX };
                             yPoints = new int[]{ SWrayY, SWrayY + SWrayHeight, rayY + rayHeight, rayY };
@@ -203,12 +195,14 @@ public interface displayEngine {
                             fillVertex(xPoints, yPoints, n_point, graph, rgb);
                         }
                      }
-                    SWrayHeight = rayHeight;
-                    SWrayX = rayX;
-                    SWrayY = rayY;
-                    SWdistance = distance;
+                     SWrayHeight = rayHeight;
+                     SWrayX = rayX;
+                     SWrayY = rayY;
+                     SWdistance = distance;
+
                 }    
             }
+            
             cachePoint.clear();
     }
 

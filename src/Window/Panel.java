@@ -7,7 +7,7 @@ import java.awt.*;
 import javax.swing.*;
 
 
-public class Panel extends JPanel implements MouseListener, Input{
+public class Panel extends JPanel implements  Input{
     private int width;
     private int height;
     private inputPosition pos = null;
@@ -76,19 +76,5 @@ public class Panel extends JPanel implements MouseListener, Input{
         topView.paint(graph);
 
     }
-    @Override
-    public void mouseClicked(MouseEvent e) {
-    }
-    @Override
-    public void mousePressed(MouseEvent e) {
-    }
-    @Override
-    public void mouseReleased(MouseEvent e) {
-    }
-    @Override
-    public void mouseEntered(MouseEvent e) {
-        }
-    @Override
-    public void mouseExited(MouseEvent e) {
-    }
+    
 }

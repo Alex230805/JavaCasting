@@ -72,7 +72,19 @@ public class Window implements KeyListener, Input {
             if (Input.inputBuffer.contains(KeyEvent.VK_RIGHT)){
                 pos.rotateClockwise();
             }
-        }, 0, 16, TimeUnit.MILLISECONDS);
+
+            if(Input.inputBuffer.contains(KeyEvent.VK_1)){
+              pos.switchEngine(0);
+            }
+            if(Input.inputBuffer.contains(KeyEvent.VK_2)){
+              pos.switchEngine(1);
+            }
+            if(Input.inputBuffer.contains(KeyEvent.VK_3)){
+              pos.switchEngine(2);
+            }
+
+
+    }, 0, 16, TimeUnit.MILLISECONDS);
 
     }
 
